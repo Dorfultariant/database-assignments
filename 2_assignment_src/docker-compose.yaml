@@ -1,0 +1,169 @@
+services:
+  backend:
+    image: node:22-alpine
+    container_name: hellticket-backend
+    working_dir: /app
+
+    command: sh -c "npm install && npm run dev"
+
+    volumes:
+      - ./Backend:/app
+      - backend_node_modules:/app/node_modules
+
+    ports:
+      - "3001:3001"
+
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      JWT_SECRET: ${JWT_SECRET}
+
+      # Regional database connections
+      DB_FINLAND_HOST: db-finland
+      DB_FINLAND_PORT: 5432
+      DB_FINLAND_NAME: ${POSTGRES_DB}
+      DB_FINLAND_USER: ${POSTGRES_USER}
+      DB_FINLAND_PASSWORD: ${POSTGRES_PASSWORD}
+
+      DB_NORWAY_HOST: db-norway
+      DB_NORWAY_PORT: 5432
+      DB_NORWAY_NAME: ${POSTGRES_DB}
+      DB_NORWAY_USER: ${POSTGRES_USER}
+      DB_NORWAY_PASSWORD: ${POSTGRES_PASSWORD}
+
+      DB_GERMANY_HOST: db-germany
+      DB_GERMANY_PORT: 5432
+      DB_GERMANY_NAME: ${POSTGRES_DB}
+      DB_GERMANY_USER: ${POSTGRES_USER}
+      DB_GERMANY_PASSWORD: ${POSTGRES_PASSWORD}
+
+    networks:
+      - application
+
+    depends_on:
+      db-finland:
+        condition: service_healthy
+      db-norway:
+        condition: service_healthy
+      db-germany:
+        condition: service_healthy
+
+  # frontend:
+  #   image: node:22-alpine
+  #   container_name: hellticket-frontend
+  #   working_dir: /app
+  #
+  #   command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+  #
+  #   volumes:
+  #     - ./Frontend:/app
+  #     - frontend_node_modules:/app/node_modules
+  #
+  #   ports:
+  #     - "5173:5173"
+  #
+  #   environment:
+  #     # VITE_API_URL: http://localhost:3001
+  #
+  #   networks:
+  #     - application
+  #
+  #   depends_on:
+  #     backend:
+  #       condition: service_started
+  #
+
+  db-finland:
+    image: postgres:16-alpine
+    container_name: hellticket-db-finland
+
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+    volumes:
+      - pg_data_finland:/var/lib/postgresql/data
+      - ./Database/init/finland:/docker-entrypoint-initdb.d
+
+    networks:
+      - application
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+
+  db-norway:
+    image: postgres:16-alpine
+    container_name: hellticket-db-norway
+
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+    volumes:
+      - pg_data_norway:/var/lib/postgresql/data
+      - ./Database/init/norway:/docker-entrypoint-initdb.d
+
+    networks:
+      - application
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+
+  db-germany:
+    image: postgres:16-alpine
+    container_name: hellticket-db-germany
+
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+    volumes:
+      - pg_data_germany:/var/lib/postgresql/data
+      - ./Database/init/germany:/docker-entrypoint-initdb.d
+
+    networks:
+      - application
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  backend_node_modules:
+  frontend_node_modules:
+
+  pg_data_finland:
+  pg_data_norway:
+  pg_data_germany:
+
+networks:
+  application:
+    driver: bridge
