@@ -1,7 +1,7 @@
 services:
   backend:
     image: node:22-alpine
-    container_name: hellticket-backend
+    container_name: smoothtune-backend
     working_dir: /app
 
     command: sh -c "npm install && npm run dev"
@@ -18,34 +18,33 @@ services:
       PORT: 3001
       JWT_SECRET: ${JWT_SECRET}
 
-      # Regional database connections
-      DB_FINLAND_HOST: db-finland
-      DB_FINLAND_PORT: 5432
-      DB_FINLAND_NAME: ${POSTGRES_DB}
-      DB_FINLAND_USER: ${POSTGRES_USER}
-      DB_FINLAND_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_MUSIC_HOST: db-music
+      DB_MUSIC_PORT: 5432
+      DB_MUSIC_NAME: ${POSTGRES_DB}
+      DB_MUSIC_USER: ${POSTGRES_USER}
+      DB_MUSIC_PASSWORD: ${POSTGRES_PASSWORD}
 
-      DB_NORWAY_HOST: db-norway
-      DB_NORWAY_PORT: 5432
-      DB_NORWAY_NAME: ${POSTGRES_DB}
-      DB_NORWAY_USER: ${POSTGRES_USER}
-      DB_NORWAY_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_GIGS_HOST: db-gigs
+      DB_GIGS_PORT: 5432
+      DB_GIGS_NAME: ${POSTGRES_DB}
+      DB_GIGS_USER: ${POSTGRES_USER}
+      DB_GIGS_PASSWORD: ${POSTGRES_PASSWORD}
 
-      DB_GERMANY_HOST: db-germany
-      DB_GERMANY_PORT: 5432
-      DB_GERMANY_NAME: ${POSTGRES_DB}
-      DB_GERMANY_USER: ${POSTGRES_USER}
-      DB_GERMANY_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_MESSAGES_HOST: db-messages
+      DB_MESSAGES_PORT: 5432
+      DB_MESSAGES_NAME: ${POSTGRES_DB}
+      DB_MESSAGES_USER: ${POSTGRES_USER}
+      DB_MESSAGES_PASSWORD: ${POSTGRES_PASSWORD}
 
     networks:
       - application
 
     depends_on:
-      db-finland:
+      db-music:
         condition: service_healthy
-      db-norway:
+      db-gigs:
         condition: service_healthy
-      db-germany:
+      db-messages:
         condition: service_healthy
 
   # frontend:
@@ -73,9 +72,9 @@ services:
   #       condition: service_started
   #
 
-  db-finland:
+  db-music:
     image: postgres:16-alpine
-    container_name: hellticket-db-finland
+    container_name: smoothtune-db-music
 
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -83,8 +82,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
 
     volumes:
-      - pg_data_finland:/var/lib/postgresql/data
-      - ./Database/init/finland:/docker-entrypoint-initdb.d
+      - pg_data_music:/var/lib/postgresql/data
+      - ./Database/init/music:/docker-entrypoint-initdb.d
 
     networks:
       - application
@@ -101,9 +100,9 @@ services:
       start_period: 10s
 
 
-  db-norway:
+  db-gigs:
     image: postgres:16-alpine
-    container_name: hellticket-db-norway
+    container_name: smoothtune-db-gigs
 
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -111,8 +110,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
 
     volumes:
-      - pg_data_norway:/var/lib/postgresql/data
-      - ./Database/init/norway:/docker-entrypoint-initdb.d
+      - pg_data_gigs:/var/lib/postgresql/data
+      - ./Database/init/gigs:/docker-entrypoint-initdb.d
 
     networks:
       - application
@@ -129,9 +128,9 @@ services:
       start_period: 10s
 
 
-  db-germany:
+  db-messages:
     image: postgres:16-alpine
-    container_name: hellticket-db-germany
+    container_name: smoothtune-db-messages
 
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -139,8 +138,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
 
     volumes:
-      - pg_data_germany:/var/lib/postgresql/data
-      - ./Database/init/germany:/docker-entrypoint-initdb.d
+      - pg_data_messages:/var/lib/postgresql/data
+      - ./Database/init/messages:/docker-entrypoint-initdb.d
 
     networks:
       - application
@@ -160,9 +159,9 @@ volumes:
   backend_node_modules:
   frontend_node_modules:
 
-  pg_data_finland:
-  pg_data_norway:
-  pg_data_germany:
+  pg_data_music:
+  pg_data_gigs:
+  pg_data_messages:
 
 networks:
   application:
