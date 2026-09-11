@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS app.gig (
 	ticket_price NUMERIC(10, 2),
 	event_date DATE NOT NULL,
 	creation_date TIMESTAMP DEFAULT NOW(),
-	fk_band_id INTEGER REFERENCES app.organizer(organizer_id) ON DELETE SET NULL,
+	fk_band INTEGER REFERENCES app.band(band_id) ON DELETE SET NULL,
   fk_organizer INTEGER REFERENCES app.organizer(organizer_id) ON DELETE SET NULL
 );
 
