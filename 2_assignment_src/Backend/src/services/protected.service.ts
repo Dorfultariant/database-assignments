@@ -1,7 +1,7 @@
 // Global error class
 import { AppError } from "../utils/errors";
 
-import type { BandModel, SongModel } from "../database/models.ts";
+import type { BandModel, SongModel, GigBandOrgModel } from "../database/models.ts";
 import db from "../database/helpers";
 
 export async function addBandToDatabase(data: BandModel | any): Promise<BandModel> {
@@ -24,3 +24,6 @@ export async function getSpecificSongs(data: SongModel | any): Promise<SongModel
   return await db.getSongs(data.songId, data.songname, data.songtype, data.mood);
 }
 
+export async function queryAllGigsWithAdditionals(): Promise<GigBandOrgModel[]> {
+  return await db.queryAllGigsWithBandAndOrganizer();
+}

@@ -3,7 +3,8 @@ import type { AuthenticatedRequest } from "../middleware/auth.middleware";
 // import { AppError } from "../utils/errors";
 import {
   getSpecificSongs,
-  getAllSongs
+  getAllSongs,
+  queryAllGigsWithAdditionals
 } from "../services/protected.service";
 
 export async function helloThere(req: AuthenticatedRequest, res: Response) {
@@ -23,6 +24,15 @@ export async function getSongsFromDatabase(req: AuthenticatedRequest, res: Respo
       results = await getSpecificSongs(data);
     }
 
+    res.status(200).json(results);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getGigBandOrgFromDatabase(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  try {
+    const results = await queryAllGigsWithAdditionals();
     res.status(200).json(results);
   } catch (error) {
     next(error);

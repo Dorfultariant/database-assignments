@@ -36,9 +36,9 @@ export type GigModel = {
   country: string;
   city: string;
   address: string;
-  ticket_price?: number | null;
-  event_date: Date;
-  creation_date: Date;
+  ticketPrice?: number | null;
+  eventDate: Date;
+  creationDate: Date;
   fkBand: number;
   fkOrganizer: number;
 };
@@ -55,4 +55,18 @@ export type LikedModel = {
   userId: number;
   likedId: number;
 };
+
+/* Basically combination of the different tables to show on frontend */
+export type GigBandOrgModel = {
+  gigId: number;
+  country: string;
+  city: string;
+  address: string;
+  ticketPrice?: number | null;
+  eventDate: Date;
+  creationDate: Date;
+  bandName: string;
+  orgName: string;
+};
+
 

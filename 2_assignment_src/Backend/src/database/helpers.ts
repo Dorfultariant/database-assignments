@@ -2,7 +2,7 @@
 import { authDb } from "./db";
 import { musicDb } from "./db";
 import { gigsDb } from "./db";
-import type { UserModel, SongModel, AlbumModel, BandModel, GigModel, OrganizerModel, LikedModel } from "./models";
+import type { UserModel, SongModel, AlbumModel, BandModel, GigModel, OrganizerModel, LikedModel, GigBandOrgModel } from "./models";
 
 /* Mappers for each SQL table to Typecript model */
 function mapUser(row: Record<string, unknown>): UserModel {
@@ -48,6 +48,34 @@ function mapLiked(row: Record<string, unknown>): LikedModel {
     fkSong: row.fk_song as number,
     userId: row.user_id as number,
     likedId: row.liked_id as number
+  };
+}
+
+function mapGig(row: Record<string, unknown>): GigModel {
+  return {
+    gigId: row.gig_id as number,
+    country: String(row.country),
+    city: String(row.city),
+    address: String(row.address),
+    ticketPrice: row.ticket_price as number,
+    eventDate: row.event_date as Date,
+    creationDate: row.creation_date as Date,
+    fkBand: row.fk_band as number,
+    fkOrganizer: row.fk_organizer as number
+  };
+}
+
+function mapGigBandOrg(row: Record<string, unknown>): GigBandOrgModel {
+  return {
+    gigId: row.gig_id as number,
+    country: String(row.country),
+    city: String(row.city),
+    address: String(row.address),
+    ticketPrice: row.ticket_price as number,
+    eventDate: row.event_date as Date,
+    creationDate: row.creation_date as Date,
+    bandName: String(row.bandname),
+    orgName: String(row.org_name)
   };
 }
 
@@ -114,7 +142,6 @@ export default {
       `
       SELECT * FROM app.band WHERE band_id = $1 OR bandname = $2 OR genre = $3 
       `, [band_id, bandname, genre]);
-    // if (!res.rows[0]) { throw new Error("Database returned no rows"); }
     return res.rows.map(mapBand);
   },
 
@@ -144,7 +171,6 @@ export default {
       SELECT * FROM app.album 
       WHERE album_id = $1 OR fk_band = $2 OR album_name = $3
       `, [album_id, band_id, album_name]);
-    // if (!res.rows[0]) { throw new Error("Database returned no rows"); }
     return res.rows.map(mapAlbum);
   },
 
@@ -162,18 +188,15 @@ export default {
       `
       SELECT * FROM app.song WHERE song_id = $1 OR songname = $2 OR songtype = $3 OR mood = $4
       `, [song_id, songname, songtype, mood]);
-    // if (!res.rows[0]) { throw new Error("Database returned no rows"); }
     // Map each found song to a list of songmodels
     return res.rows.map(mapSong);
   },
 
   async queryAllSongs(): Promise<SongModel[]> {
     const res = await musicDb.query(`SELECT * FROM app.song`);
-    // if (!res.rows[0]) { throw new Error("Database returned no rows"); }
     // Map each found song to a list of songmodels
     return res.rows.map(mapSong);
   },
-
 
   async likeSong(song_id: number, user_id: number): Promise<LikedModel> {
     const res = await musicDb.query(
@@ -191,6 +214,25 @@ export default {
       `, [song_id, user_id]);
     if (!res.rows[0]) { throw new Error("Database returned no rows"); }
     return res.rows[0];
+  },
+
+  async queryAllGigsWithBandAndOrganizer(): Promise<GigBandOrgModel[]> {
+    const res = await gigsDb.query(`
+      SELECT
+        g.country,
+        g.city,
+        g.address,
+        g.ticket_price,
+        g.event_date,
+        bnd.bandname,
+        org.org_name
+      FROM app.gig AS g
+      JOIN app.band AS bnd
+        ON g.fk_band = bnd.band_id
+      JOIN app.organizer AS org
+        ON g.fk_organizer = org.organizer_id;
+          `);
+    return res.rows.map(mapGigBandOrg);
   },
 
 };
