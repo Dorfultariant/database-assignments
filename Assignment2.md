@@ -26,3 +26,11 @@ You should then be able to just navigate in browser to `localhost:5173` which sh
 
 After logging in successfully, you should be able to see a list of the different databases and by clicking either one get to further details and actions about them.
 
+
+## Tools utilized
+
+Specific mentions for toolusage. Postgresql documentation was used in general but these are improvement tools such as testing queries without local setup (or docker in my case).
+
+Online postgresql SQL tester for the db creation and query testing: [onecompiler](https://onecompiler.com/postgresql)
+
+
