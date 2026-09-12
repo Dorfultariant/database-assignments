@@ -52,3 +52,17 @@ export type LikedModel = {
   userId: number;
   likedId: number;
 };
+
+/* Basically combination of the different tables to show on frontend */
+export type GigBandOrgModel = {
+  gigId: number;
+  country: string;
+  city: string;
+  address: string;
+  ticketPrice?: number | null;
+  eventDate: Date;
+  creationDate: Date;
+  bandName: string;
+  orgName: string;
+};
+
