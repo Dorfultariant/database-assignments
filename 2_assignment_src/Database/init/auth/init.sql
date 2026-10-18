@@ -3,7 +3,6 @@ CREATE SCHEMA IF NOT EXISTS app AUTHORIZATION teppo;
 CREATE TABLE IF NOT EXISTS app.user (
 	user_id SERIAL PRIMARY KEY,
   email TEXT UNIQUE NOT NULL ,
-  password_hash TEXT NOT NULL,
-	creation_date TIMESTAMP DEFAULT NOW()
+  password_hash TEXT NOT NULL
 );
 

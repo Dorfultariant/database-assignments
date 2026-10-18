@@ -1,141 +1,30 @@
 services:
-  backend:
-    image: node:22-alpine
-    container_name: smoothtune-backend
-    working_dir: /app
+  frontend:
+    build:
+      context: ./Frontend
 
-    command: sh -c "npm install && npm run dev"
-
-    volumes:
-      - ./Backend:/app
-      - backend_node_modules:/app/node_modules
-
-    ports:
-      - "3001:3001"
-
-    environment:
-      NODE_ENV: development
-      PORT: 3001
-      JWT_SECRET: ${JWT_SECRET}
-
-      DB_MUSIC_HOST: ${DB_MUSIC_HOST}
-      DB_MUSIC_PORT: 5432
-      DB_MUSIC_NAME: ${DB_MUSIC_NAME}
-      DB_MUSIC_USER: ${POSTGRES_USER}
-      DB_MUSIC_PASSWORD: ${POSTGRES_PASSWORD}
-
-      DB_GIGS_HOST: ${DB_GIGS_HOST}
-      DB_GIGS_PORT: 5432
-      DB_GIGS_NAME: ${DB_GIGS_NAME}
-      DB_GIGS_USER: ${POSTGRES_USER}
-      DB_GIGS_PASSWORD: ${POSTGRES_PASSWORD}
-
-      DB_AUTH_HOST: ${DB_AUTH_HOST}
-      DB_AUTH_PORT: 5432
-      DB_AUTH_NAME: ${DB_AUTH_NAME}
-      DB_AUTH_USER: ${POSTGRES_USER}
-      DB_AUTH_PASSWORD: ${POSTGRES_PASSWORD}
+    stdin_open: true
+    tty: true
 
     networks:
       - application
 
     depends_on:
+      db-auth:
+        condition: service_healthy
       db-music:
         condition: service_healthy
       db-gigs:
         condition: service_healthy
-      db-auth:
-        condition: service_healthy
-
-  frontend:
-    image: node:22-alpine
-    container_name: smoothtune-frontend
-    working_dir: /app
-
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
-
-    volumes:
-      - ./Frontend:/app
-      - frontend_node_modules:/app/node_modules
-
-    ports:
-      - "5173:5173"
-
-    environment:
-      VITE_API_URL: http://localhost:3001
-
-    networks:
-      - application
-
-    depends_on:
-      backend:
-        condition: service_started
-
-
-  db-music:
-    image: postgres:16-alpine
-    container_name: smoothtune-db-music
-
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${DB_MUSIC_NAME}
-
-    volumes:
-      - pg_data_music:/var/lib/postgresql/data
-      - ./Database/init/music:/docker-entrypoint-initdb.d
-
-    networks:
-      - application
-
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER} -d ${DB_MUSIC_NAME}"
-        ]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 10s
-
-
-  db-gigs:
-    image: postgres:16-alpine
-    container_name: smoothtune-db-gigs
-
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${DB_GIGS_NAME}
-
-    volumes:
-      - pg_data_gigs:/var/lib/postgresql/data
-      - ./Database/init/gigs:/docker-entrypoint-initdb.d
-
-    networks:
-      - application
-
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER} -d ${DB_GIGS_NAME}"
-        ]
-      interval: 5s
-      timeout: 5s
-      retries: 10
-      start_period: 10s
-
 
   db-auth:
     image: postgres:16-alpine
     container_name: smoothtune-db-auth
 
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${DB_AUTH_NAME}
+      POSTGRES_USER: teppo
+      POSTGRES_PASSWORD: teppo
+      POSTGRES_DB: auth
 
     volumes:
       - pg_data_auth:/var/lib/postgresql/data
@@ -148,7 +37,61 @@ services:
       test:
         [
           "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER} -d ${DB_AUTH_NAME}"
+          "pg_isready -U teppo -d auth"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  db-music:
+    image: postgres:16-alpine
+    container_name: smoothtune-db-music
+
+    environment:
+      POSTGRES_USER: teppo
+      POSTGRES_PASSWORD: teppo
+      POSTGRES_DB: music
+
+    volumes:
+      - pg_data_music:/var/lib/postgresql/data
+      - ./Database/init/music:/docker-entrypoint-initdb.d
+
+    networks:
+      - application
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U teppo -d music"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  db-gigs:
+    image: postgres:16-alpine
+    container_name: smoothtune-db-gigs
+
+    environment:
+      POSTGRES_USER: teppo
+      POSTGRES_PASSWORD: teppo
+      POSTGRES_DB: gigs
+
+    volumes:
+      - pg_data_gigs:/var/lib/postgresql/data
+      - ./Database/init/gigs:/docker-entrypoint-initdb.d
+
+    networks:
+      - application
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U teppo -d gigs"
         ]
       interval: 5s
       timeout: 5s
@@ -156,12 +99,9 @@ services:
       start_period: 10s
 
 volumes:
-  backend_node_modules:
-  frontend_node_modules:
-
+  pg_data_auth:
   pg_data_music:
   pg_data_gigs:
-  pg_data_auth:
 
 networks:
   application:
