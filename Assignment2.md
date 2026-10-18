@@ -1,12 +1,8 @@
-## Declaration
-
-The `./2_assignment_src/` utilizes a previous course project in which I was the main culprit behind backend implementation and I decided to utilize the source in this assignment as well, there are some modifications and some are straight copy.
-
-The reason for implementing such complex setup for this assignment was mainly due to it helping (hopefully) with the project work ignition as it can be further modded to get the MVP working quicker.
-
 ## Quick-ish start
 
-The `2_assignment_src` should be able to run on localhost setup with the three different databases by utilizing simply by cloning this repository and navigating to the assignment.
+The `2_assignment_src` should be able to run on platforms with docker compose available, setup with the three different databases by utilizing simply by cloning this repository and navigating to the assignment.
+
+NOTE: There remains some files not specific to this setup as I moved from fullstack to simple python + postgresql
 
 On linux (with systemd for service start):
 
@@ -16,15 +12,48 @@ On linux (with systemd for service start):
 ## Or start it
 [2_assignment_src]$ sudo systemctl start --now docker
 
-## Ignite the docker service build and setup:
-[2_assignment_src]$ docker compose up [-d]
+## Ignite the docker service build and setup [optionally detach from it]:
+[2_assignment_src]$ docker compose up --build [-d]
 
-## Env should be available (with good principles in a public repository) to get the setup running quickly
+## Start the application in the docker environment (REQUIRED TO RUN IF YOU EXIT IT) 
+[2_assignment_src]$ docker compose run --rm frontend
+
+## Now you should be able to test the application by pressing ENTER
+
+"""
+$ docker compose run --rm frontend
+[+] run 3/3
+ ✔ Container smoothtune-db-auth  Running                                                                                                  0.0s
+ ✔ Container smoothtune-db-music Running                                                                                                  0.0s
+ ✔ Container smoothtune-db-gigs  Running                                                                                                  0.0s
+Container smoothtune-db-music Waiting 
+Container smoothtune-db-gigs Waiting 
+Container smoothtune-db-auth Waiting 
+Container smoothtune-db-auth Healthy 
+Container smoothtune-db-music Healthy 
+Container smoothtune-db-gigs Healthy 
+Container 2_assignment_src-frontend-run-a8319c9cf2ab Creating 
+Container 2_assignment_src-frontend-run-a8319c9cf2ab Created 
+Press ENTER...
+Email (text): seppo
+Password (text): korppi
+
+	New user Registered
+
+## DATABASE SELECTION ##
+
+[A]UTH
+[M]USIC
+[G]IGS
+
+[Q]UIT
+Option: 
+
+"""
+
+## Stopping the docker services [optionally annihilating volumes and orphans]:
+[2_assignment_src]$ docker compose down [--volumes --remove-orphans]
 ```
-
-You should then be able to just navigate in browser to `localhost:5173` which should bring you to "login" screen where you must login to get further (if authorization works as planned)
-
-After logging in successfully, you should be able to see a list of the different databases and by clicking either one get to further details and actions about them.
 
 
 ## Tools utilized
