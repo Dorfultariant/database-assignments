@@ -1,0 +1,48 @@
+@startuml EntityRelation
+
+'' src: https://pdf.plantuml.net/1.2020.22/PlantUML_Language_Reference_Guide_en.pdf 
+''      Class Diagram
+
+entity CUSTOMERS {
+  * CID : PK
+  --
+  NAME
+  STREET
+  CITY
+  STATE
+  COUNTRY
+  PHONES
+}
+
+entity ORDERS {
+  * OID : PK
+  --
+  CID : FK
+  O_DATE
+  O_TOTAL
+}
+
+'' Assuming that OID is a foreign key used with LINE_ID to make the ORDER_ITEMS Primary key
+entity ORDER_ITEMS {
+  * LINE_ID : PK
+  * OID : PK, FK
+  --
+  PID : FK
+  QTY
+}
+
+entity PRODUCTS {
+  * PID : PK
+  --
+  P_NAME
+  PRICE
+}
+
+'' one customer can place 0 or more orders
+CUSTOMERS "1" ||--o{ "0..N" ORDERS : places
+'' one order can contain 1 or more order items
+ORDERS "1" ||--{ "1..N" ORDER_ITEMS : contains
+'' one product can be in 0 or more order items
+PRODUCTS "1" ||--o{ "0..N" ORDER_ITEMS : ordered
+
+@enduml
