@@ -1,30 +1,37 @@
 @startuml GraphDatabase
 
 '' src: https://pdf.plantuml.net/1.2020.22/PlantUML_Language_Reference_Guide_en.pdf 
-''      Class Diagram
+''      Class Diagram as Plantuml does not appear to have "node"-style
+
 class CUSTOMER {
   CID
   NAME
+  PHONES
+}
+
+class ADDRESS {
+  AID
   STREET
   CITY
   STATE
   COUNTRY
-  PHONES
 }
+
 class ORDER {
   OID
-  CID
   O_DATE
   O_TOTAL
 }
+
 class PRODUCT {
   PID
   P_NAME
   PRICE
 }
 
-CUSTOMER --> ORDER : placed
-'' The ORDER - PRODUCT relation contains the ORDER_ITEM data (QTY), this is why ORDER_ITEM is not defined (relational related)
-ORDER --> PRODUCT : contains(LINE_ID,QTY)
+CUSTOMER --> ADDRESS : CONTAINS
+CUSTOMER --> ORDER : PLACED
+'' The ORDER - PRODUCT relation contains the ORDER_ITEM data (QTY, PRICE), this is why ORDER_ITEM is not defined (relational related)
+ORDER --> PRODUCT : CONTAINS(LINE_ID, QTY, PRICE)
 
 @enduml

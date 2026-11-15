@@ -2,37 +2,35 @@
 
 '' src: https://pdf.plantuml.net/1.2020.22/PlantUML_Language_Reference_Guide_en.pdf 
 ''      Class Diagram
+'' src: https://onuml.com/blog/plantuml-er-diagram-guide
 
 entity CUSTOMERS {
-  * CID : PK
+  * CID : <<PK>>
   --
   NAME
-  STREET
-  CITY
-  STATE
-  COUNTRY
+  ADDRESS (STREET, CITY, STATE, COUNTRY)
   PHONES
 }
 
 entity ORDERS {
-  * OID : PK
+  * OID : <<PK>>
   --
-  CID : FK
+  CID : <<FK>>
   O_DATE
   O_TOTAL
 }
 
 '' Assuming that OID is a foreign key used with LINE_ID to make the ORDER_ITEMS Primary key
 entity ORDER_ITEMS {
-  * LINE_ID : PK
-  * OID : PK, FK
+  * OID : PK, <<FK>>
+  * LINE_ID : <<PK>>
   --
-  PID : FK
+  PID : <<FK>>
   QTY
 }
 
 entity PRODUCTS {
-  * PID : PK
+  * PID : <<PK>>
   --
   P_NAME
   PRICE
